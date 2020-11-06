@@ -41,7 +41,13 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         self.frame_36.setVisible(False)
         self.frame_38.setVisible(False)
         self.pushButton_2.clicked.connect(self.graph)
-
+        self.onlyfloat = QtGui.QDoubleValidator()
+        self.lineEdit.setValidator(self.onlyfloat)
+        self.lineEdit_2.setValidator(self.onlyfloat)
+        self.lineEdit_3.setValidator(self.onlyfloat)
+        self.lineEdit_4.setValidator(self.onlyfloat)
+        self.lineEdit_5.setValidator(self.onlyfloat)
+        self.lineEdit_6.setValidator(self.onlyfloat)
 
     def Maxim_mini(self):
         global GLOBAL_i
@@ -80,16 +86,6 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         if nexty == 2:
             self.pg2.setMaximumSize(QtCore.QSize(0, 16777215))
             self.pg3.setMaximumSize(QtCore.QSize(16777215, 16777215))
-            y = len(val2)
-            for x in range(0, y):
-                self.tableWidget.setItem(x, 0, QTableWidgetItem(str(val2[x].length)))
-                self.tableWidget.setItem(x, 1, QTableWidgetItem(str(val2[x].mass)))
-                self.tableWidget.setItem(x, 2, QTableWidgetItem(str(val2[x].static)))
-                self.tableWidget.setItem(x, 3, QTableWidgetItem(str(val2[x].konstant)))
-                self.tableWidget.setItem(x, 4, QTableWidgetItem(str(val2[x].time)))
-                self.tableWidget.setItem(x, 5, QTableWidgetItem(str(val2[x].frequency)))
-                self.tableWidget.setItem(x, 6, QTableWidgetItem(str(val2[x].natural)))
-
 
     def CurrentText(self):
         vvg = str(self.comboBox_pg2.currentText())
@@ -141,6 +137,7 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
 
     def rem2(self, mass):
         self.frame_30.setVisible(True)
+        self.pushButton.setEnabled(True)
         self.lineEdit_5.editingFinished.connect(lambda : self.record(mass))
 
     def record(self, mass):
@@ -157,7 +154,6 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         self.lineEdit_2.setReadOnly(True)
         self.lineEdit_3.setReadOnly(True)
         self.lineEdit_4.setReadOnly(True)
-        self.pushButton.setEnabled(True)
         if mass == 100:
             lenth = 0.193
         if mass == 200:
@@ -200,7 +196,7 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
             print(".......")
 
     def table(self, val):
-        global val2
+        val2 = []
         self.next.setEnabled(True)
         val2.append(val)
         self.comboBox_pg2.setEnabled(True)
@@ -213,7 +209,18 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         self.lineEdit_3.clear()
         self.lineEdit_4.clear()
         self.lineEdit_5.clear()
-        self.lineEdit_6.editingFinished.connect(lambda :self.graph2(val2))
+        y = len(val2)
+        for x in range(0, y):
+            a = round(val2[x].static, 2)
+            self.tableWidget.setItem(x, 0, QTableWidgetItem(str(val2[x].length)))
+            self.tableWidget.setItem(x, 1, QTableWidgetItem(str(val2[x].mass)))
+            self.tableWidget.setItem(x, 2, QTableWidgetItem(str(a)))
+            self.tableWidget.setItem(x, 3, QTableWidgetItem(str(val2[x].konstant)))
+            self.tableWidget.setItem(x, 4, QTableWidgetItem(str(val2[x].time)))
+            self.tableWidget.setItem(x, 5, QTableWidgetItem(str(val2[x].frequency)))
+            self.tableWidget.setItem(x, 6, QTableWidgetItem(str(val2[x].natural)))
+        self.lineEdit_6.editingFinished.connect(lambda: self.graph2(val2))
+
 
     def graph(self):
         self.frame_38.setVisible(True)
@@ -237,7 +244,6 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         plot_graph.main(val2, number,float(damping_ratio))
 
 
-val2 = []
 nexty = 1
 GLOBAL_i = 1
 app = QtWidgets.QApplication(sys.argv)
