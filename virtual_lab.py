@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, Qt, QtWidgets
 import sys
 import math
-
+import plot_graph
 
 
 class mainwinn(QMainWindow,Ui_MainWindow ):
@@ -35,6 +35,12 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         self.frame_26.setVisible(False)
         self.comboBox_pg2.currentIndexChanged.connect(self.CurrentText)
         self.pushButton.setEnabled(False)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.frame_30.setVisible(False)
+        self.frame_36.setVisible(False)
+        self.frame_38.setVisible(False)
+        self.pushButton_2.clicked.connect(self.graph)
 
 
     def Maxim_mini(self):
@@ -63,9 +69,27 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
 
 
     def page2(self):
-        self.next.setEnabled(False)
-        self.pg1.setMaximumSize(QtCore.QSize(0, 16777215))
-        self.pg2.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        global nexty
+        if nexty == 1:
+            self.next.setEnabled(False)
+            self.pg1.setMaximumSize(QtCore.QSize(0, 16777215))
+            self.pg2.setMaximumSize(QtCore.QSize(16777215, 16777215))
+            nexty += 1
+            return nexty
+
+        if nexty == 2:
+            self.pg2.setMaximumSize(QtCore.QSize(0, 16777215))
+            self.pg3.setMaximumSize(QtCore.QSize(16777215, 16777215))
+            y = len(val2)
+            for x in range(0, y):
+                self.tableWidget.setItem(x, 0, QTableWidgetItem(str(val2[x].length)))
+                self.tableWidget.setItem(x, 1, QTableWidgetItem(str(val2[x].mass)))
+                self.tableWidget.setItem(x, 2, QTableWidgetItem(str(val2[x].static)))
+                self.tableWidget.setItem(x, 3, QTableWidgetItem(str(val2[x].konstant)))
+                self.tableWidget.setItem(x, 4, QTableWidgetItem(str(val2[x].time)))
+                self.tableWidget.setItem(x, 5, QTableWidgetItem(str(val2[x].frequency)))
+                self.tableWidget.setItem(x, 6, QTableWidgetItem(str(val2[x].natural)))
+
 
     def CurrentText(self):
         vvg = str(self.comboBox_pg2.currentText())
@@ -113,16 +137,22 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
     def rem(self, mass):
         self.frame_25.setVisible(True)
         self.frame_26.setVisible(True)
-        self.lineEdit_4.editingFinished.connect(lambda :self.record(mass))
+        self.lineEdit_4.editingFinished.connect(lambda :self.rem2(mass))
+
+    def rem2(self, mass):
+        self.frame_30.setVisible(True)
+        self.lineEdit_5.editingFinished.connect(lambda : self.record(mass))
 
     def record(self, mass):
         class properties:
-            def __init__(self,length, mass, static, konstant, time):
+            def __init__(self,length, mass, static, konstant, time, frequency, natural):
                 self.length = length
                 self.mass= mass
                 self.static = static
                 self.konstant = konstant
                 self.time = time
+                self.frequency = frequency
+                self.natural = natural
         self.lineEdit.setReadOnly(True)
         self.lineEdit_2.setReadOnly(True)
         self.lineEdit_3.setReadOnly(True)
@@ -139,9 +169,13 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         try:
             K = float(self.lineEdit.text())
             t1 = float(self.lineEdit_3.text())
+            freq = float (self.lineEdit_4.text())
+            nat = float(self.lineEdit_5.text())
+            props1 = properties(lenth, m, delta, K, t1, freq, nat)
         except ValueError:
             print("___")
-        props1 = properties(lenth, m, delta, K, t1)
+        except UnboundLocalError:
+            print("////////")
         self.pushButton.clicked.connect(lambda : self.table(props1))
 
     def timetkn(self,m):
@@ -150,7 +184,7 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         osc = self.lineEdit_2.text()
         try:
             print(int(osc))
-            wn = math.sqrt(float(K) / (m*0.001 + 0.003))
+            wn = math.sqrt(float(K) / (m*0.001 + 0.005))
             num = ((2 * 3.142) / wn)*int(osc)
             num1 = round(num, 2)
             self.comboBox_pg2.setEnabled(False)
@@ -166,7 +200,8 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
             print(".......")
 
     def table(self, val):
-        val2 = []
+        global val2
+        self.next.setEnabled(True)
         val2.append(val)
         self.comboBox_pg2.setEnabled(True)
         self.lineEdit.setReadOnly(False)
@@ -177,10 +212,33 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         self.lineEdit_2.clear()
         self.lineEdit_3.clear()
         self.lineEdit_4.clear()
+        self.lineEdit_5.clear()
+        self.lineEdit_6.editingFinished.connect(lambda :self.graph2(val2))
+
+    def graph(self):
+        self.frame_38.setVisible(True)
+        self.frame_36.setVisible(True)
+        self.comboBox.addItem("1")
+        self.comboBox.addItem("2")
+        self.comboBox.addItem("3")
+        self.comboBox.addItem("4")
+        self.comboBox.addItem("5")
+
+    def graph2(self, val2):
+        #global graphy
+        self.comboBox.setEnabled(False)
+        self.pushButton_3.clicked.connect(lambda :self.graph3(val2))
+        #graphy +=1
+
+    def graph3(self, val2):
+        number = int(self.comboBox.currentText())
+        damping_ratio = self.lineEdit_6.text()
+        #print(oscillations)
+        plot_graph.main(val2, number,float(damping_ratio))
 
 
-
-
+val2 = []
+nexty = 1
 GLOBAL_i = 1
 app = QtWidgets.QApplication(sys.argv)
 window = mainwinn()
