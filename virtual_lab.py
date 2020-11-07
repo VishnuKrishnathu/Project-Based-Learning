@@ -2,12 +2,12 @@
 
 
 
-from test3 import Ui_MainWindow
+from pyqt_edit import Ui_MainWindow
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, Qt, QtWidgets
 import sys
 import math
-import plot_graph
+import graph_plot
 
 
 class mainwinn(QMainWindow,Ui_MainWindow ):
@@ -70,8 +70,6 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
 
     def mousePressEvent(self, event):
         self.dragPos = event.globalPos()
-
-
 
 
     def page2(self):
@@ -232,16 +230,13 @@ class mainwinn(QMainWindow,Ui_MainWindow ):
         self.comboBox.addItem("5")
 
     def graph2(self, val2):
-        #global graphy
         self.comboBox.setEnabled(False)
         self.pushButton_3.clicked.connect(lambda :self.graph3(val2))
-        #graphy +=1
 
     def graph3(self, val2):
         number = int(self.comboBox.currentText())
         damping_ratio = self.lineEdit_6.text()
-        #print(oscillations)
-        plot_graph.main(val2, number,float(damping_ratio))
+        graph_plot.main(val2, number,float(damping_ratio))
 
 
 nexty = 1
