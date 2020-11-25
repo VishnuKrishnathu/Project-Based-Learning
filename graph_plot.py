@@ -12,7 +12,7 @@ def model(x,t,K,F,m, c):
     return dx_dt
 
 def main(value, number,zeta):
-    K = value[number-1].konstant
+    K = float(value[number-1].konstant)
     F = (value[number-1].mass+0.005)*9.81
     m = value[number-1].mass
     displacement = value[number-1].static
@@ -24,7 +24,7 @@ def main(value, number,zeta):
         pass
     except UnboundLocalError:
         pass
-    time = (value[number-1].time)*10
+    time = (float(value[number-1].time))*10
 
     x_1 = [displacement, 0]
     t = numpy.linspace(0,time, 100)
